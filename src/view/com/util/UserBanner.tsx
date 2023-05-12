@@ -57,7 +57,6 @@ export function UserBanner({
         }
         const items = await openPicker(store, {
           mediaType: 'photo',
-          multiple: false,
         })
         onSelectNewBanner?.(
           await openCropper(store, {

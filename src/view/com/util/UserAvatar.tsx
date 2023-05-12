@@ -83,20 +83,26 @@ export function UserAvatar({
           if (!(await requestPhotoAccessIfNeeded())) {
             return
           }
+
           const items = await openPicker(store, {
             mediaType: 'photo',
-            multiple: false,
           })
 
-          onSelectNewAvatar?.(
-            await openCropper(store, {
-              mediaType: 'photo',
-              path: items[0].path,
-              width: 1000,
-              height: 1000,
-              cropperCircleOverlay: true,
-            }),
-          )
+          if (items.length > 0) {
+            const item = items[0]
+
+            console.log('ON SELECT NEW AVATAR! ', onSelectNewAvatar)
+
+            onSelectNewAvatar?.(
+              await openCropper(store, {
+                mediaType: 'photo',
+                path: item.path,
+                width: item.width,
+                height: item.height,
+                cropperCircleOverlay: true,
+              }),
+            )
+          }
         },
       },
       {

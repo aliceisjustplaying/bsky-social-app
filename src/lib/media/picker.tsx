@@ -1,12 +1,15 @@
 import {
-  openPicker as openPickerFn,
   openCamera as openCameraFn,
   openCropper as openCropperFn,
-  ImageOrVideo,
+  Image as RNImage,
 } from 'react-native-image-crop-picker'
 import {RootStoreModel} from 'state/index'
-import {PickerOpts, CameraOpts, CropperOptions} from './types'
-import {Image as RNImage} from 'react-native-image-crop-picker'
+import {CameraOpts, CropperOptions} from './types'
+import {
+  ImageLibraryOptions,
+  launchImageLibrary,
+} from 'react-native-image-picker'
+import {getDataUriSize} from './util'
 
 /**
  * NOTE
@@ -19,27 +22,57 @@ import {Image as RNImage} from 'react-native-image-crop-picker'
 
 export async function openPicker(
   _store: RootStoreModel,
-  opts?: PickerOpts,
+  opts?: Partial<ImageLibraryOptions>,
 ): Promise<RNImage[]> {
-  const items = await openPickerFn({
-    mediaType: 'photo', // TODO: eventually add other media types
-    multiple: opts?.multiple,
-    maxFiles: opts?.maxFiles,
-    forceJpg: true, // ios only
-    compressImageQuality: 0.8,
+  const images: RNImage[] = []
+
+  const response = await launchImageLibrary({
+    ...opts,
+    mediaType: 'photo',
+    maxWidth: 2000,
+    maxHeight: 2000,
+    quality: 0.9,
   })
 
-  const toMedia = (item: ImageOrVideo) => ({
-    path: item.path,
-    mime: item.mime,
-    size: item.size,
-    width: item.width,
-    height: item.height,
-  })
-  if (Array.isArray(items)) {
-    return items.map(toMedia)
+  if (response.didCancel) {
+    _store.log.error('Unable to pick images: Cancelled')
   }
-  return [toMedia(items)]
+
+  if (response.errorCode) {
+    _store.log.error(
+      `Unable to pick images: ${
+        response.errorMessage !== undefined ? ':' + response.errorMessage : ''
+      }`,
+    )
+  }
+
+  if (response.assets === undefined) {
+    _store.log.error('Unable to pick images: images undefined')
+  }
+
+  if (response.assets !== undefined) {
+    for (let i = 0; i < response.assets.length; i++) {
+      const image = response.assets[i]
+
+      if (
+        image.height === undefined ||
+        image.width === undefined ||
+        image.uri === undefined
+      ) {
+        _store.log.error('Unable to pick images: undefined attribute')
+      } else {
+        images.push({
+          mime: 'image/jpeg',
+          height: image.height,
+          width: image.width,
+          path: image.uri,
+          size: getDataUriSize(image.uri),
+        })
+      }
+    }
+  }
+
+  return images
 }
 
 export async function openCamera(
@@ -69,10 +102,14 @@ export async function openCropper(
   opts: CropperOptions,
 ): Promise<RNImage> {
   const item = await openCropperFn({
+    height: 2000,
+    width: 2000,
     ...opts,
     forceJpg: true, // ios only
     compressImageQuality: 0.8,
   })
+
+  console.log('BTW ITEM: ', item)
 
   return {
     path: item.path,
