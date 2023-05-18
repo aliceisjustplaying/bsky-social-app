@@ -28,8 +28,7 @@ export const DesktopRightNav = observer(function DesktopRightNav() {
       {store.session.hasSession && <DesktopSearch />}
       <View style={styles.message}>
         <Text type="md" style={[pal.textLight, styles.messageLine]}>
-          Welcome to Bluesky! This is a beta application that's still in
-          development.
+          Welcome to Bluesky! Paul thinks you're cute 😘
         </Text>
         <View style={[s.flexRow]}>
           <TextLink
