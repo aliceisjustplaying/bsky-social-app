@@ -25,6 +25,13 @@
         "resourceClass": "medium"
       },
       "channel": "production"
+    },
+    "production-apk": {
+      "channel": "production",
+      "android": {
+        "gradleCommand": ":app:assembleRelease",
+        "buildType": "apk"
+      }
     }
   },
   "submit": {
