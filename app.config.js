@@ -5,7 +5,8 @@ module.exports = function () {
       name: 'Bluesky',
       slug: 'bluesky',
       scheme: 'bluesky',
-      owner: 'blueskysocial',
+      // owner: 'blueskysocial',
+      // owner: 'aliceisjustplaying',
       version: '1.56.0',
       runtimeVersion: {
         policy: 'appVersion',
@@ -49,7 +50,7 @@ module.exports = function () {
           backgroundColor: '#ffffff',
         },
         googleServicesFile: './google-services.json',
-        package: 'xyz.blueskyweb.app',
+        package: 'xyz.blueskywebalice.app',
         intentFilters: [
           {
             action: 'VIEW',
@@ -95,7 +96,7 @@ module.exports = function () {
       ].filter(Boolean),
       extra: {
         eas: {
-          projectId: '55bd077a-d905-4184-9c7f-94789ba0f302',
+          projectId: 'a12e6374-3e38-4045-94ff-b921a956ea21',
         },
       },
       hooks: {
