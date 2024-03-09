@@ -2282,7 +2282,7 @@ msgstr "限制设置"
 msgid "Moderator has chosen to set a general warning on the content."
 msgstr "限制选择对内容设置一般警告。"
 
-#: src/view/shell/desktop/Feeds.tsx:63
+#: src/view/shell/desktop/Feeds.tsx:65
 msgid "More feeds"
 msgstr "更多信息流"
 

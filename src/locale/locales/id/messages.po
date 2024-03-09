@@ -2368,7 +2368,7 @@ msgstr "Pengaturan moderasi"
 msgid "Moderator has chosen to set a general warning on the content."
 msgstr "Moderator telah memilih untuk menetapkan peringatan umum pada konten."
 
-#: src/view/shell/desktop/Feeds.tsx:63
+#: src/view/shell/desktop/Feeds.tsx:65
 msgid "More feeds"
 msgstr "Feed lainnya"
 

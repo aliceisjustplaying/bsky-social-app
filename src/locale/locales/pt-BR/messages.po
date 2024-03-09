@@ -2294,7 +2294,7 @@ msgstr "Moderação"
 msgid "Moderator has chosen to set a general warning on the content."
 msgstr "O moderador escolheu um aviso geral neste conteúdo."
 
-#: src/view/shell/desktop/Feeds.tsx:63
+#: src/view/shell/desktop/Feeds.tsx:65
 msgid "More feeds"
 msgstr "Mais feeds"
 
