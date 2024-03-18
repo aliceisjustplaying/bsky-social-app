@@ -36,6 +36,7 @@ export type FeedSourceFeedInfo = {
   creatorHandle: string
   likeCount: number | undefined
   likeUri: string | undefined
+  isDead?: boolean
 }
 
 export type FeedSourceListInfo = {
@@ -52,6 +53,7 @@ export type FeedSourceListInfo = {
   description: RichText
   creatorDid: string
   creatorHandle: string
+  isDead?: boolean
 }
 
 export type FeedSourceInfo = FeedSourceFeedInfo | FeedSourceListInfo
@@ -96,6 +98,7 @@ export function hydrateFeedGenerator(
     creatorHandle: view.creator.handle,
     likeCount: view.likeCount,
     likeUri: view.viewer?.like,
+    isDead: view.isDead,
   }
 }
 
@@ -147,8 +150,61 @@ export function useFeedSourceInfoQuery({uri}: {uri: string}) {
       let view: FeedSourceInfo
 
       if (type === 'feed') {
-        const res = await getAgent().app.bsky.feed.getFeedGenerator({feed: uri})
-        view = hydrateFeedGenerator(res.data.view)
+        try {
+          const res = await getAgent().app.bsky.feed.getFeedGenerator({
+            feed: uri,
+          })
+          view = hydrateFeedGenerator(res.data.view)
+        } catch (e) {
+          try {
+            console.log('uri: ', uri)
+            let pattern =
+              /at:\/\/(did:.+?:.+?)\/app.bsky.feed.generator\/(.+?)$/
+            let [, did, feedName] = pattern.exec(uri)!
+            console.log('Fetching did: ', did)
+            const res = await getAgent().app.bsky.actor.getProfile({
+              actor: did,
+            })
+            view = {
+              avatar: res.data.avatar,
+              cid: '',
+              creatorDid: uri,
+              creatorHandle: '',
+              description: new RichText({text: 'Dead feed'}),
+              displayName: `${res.data.displayName!.trim()}'s dead feed \`${feedName}\``,
+              likeCount: 0,
+              likeUri: '',
+              route: {
+                href: `/profile/${uri}`,
+                name: 'Profile',
+                params: {},
+              },
+              type: 'feed',
+              uri: '',
+              isDead: true,
+            }
+          } catch (error) {
+            // we give up
+            view = {
+              avatar: '',
+              cid: '',
+              creatorDid: '',
+              creatorHandle: '',
+              description: new RichText({text: 'Dead feed'}),
+              displayName: 'Dead feed from dead user',
+              likeCount: 0,
+              likeUri: '',
+              route: {
+                href: '/',
+                name: 'Home',
+                params: {},
+              },
+              type: 'feed',
+              uri: '',
+              isDead: true,
+            }
+          }
+        }
       } else {
         const res = await getAgent().app.bsky.graph.getList({
           list: uri,

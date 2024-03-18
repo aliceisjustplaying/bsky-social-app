@@ -573,6 +573,50 @@ function SavedFeed({feedUri}: {feedUri: string}) {
       />
     )
 
+  if (info.isDead) {
+    return (
+      <View
+        style={[
+          pal.border,
+          styles.savedFeed,
+          styles.deadSavedFeed,
+          isMobile && styles.savedFeedMobile,
+        ]}>
+        {error || info.avatar === '' ? (
+          <View
+            style={{width: 28, flexDirection: 'row', justifyContent: 'center'}}>
+            <FontAwesomeIcon
+              icon="exclamation-circle"
+              color={pal.colors.textLight}
+            />
+          </View>
+        ) : (
+          <UserAvatar type={typeAvatar} size={28} avatar={info.avatar} />
+        )}
+        <View
+          style={{flex: 1, flexDirection: 'row', gap: 8, alignItems: 'center'}}>
+          <Text type="lg-medium" style={pal.text} numberOfLines={1}>
+            {info.displayName}
+          </Text>
+          {error ? (
+            <View style={[styles.offlineSlug, pal.borderDark]}>
+              <Text type="xs" style={pal.textLight}>
+                <Trans>Feed offline</Trans>
+              </Text>
+            </View>
+          ) : null}
+        </View>
+        {isMobile && (
+          <FontAwesomeIcon
+            icon="chevron-right"
+            size={14}
+            style={pal.textLight as FontAwesomeIconStyle}
+          />
+        )}
+      </View>
+    )
+  }
+
   return (
     <Link
       testID={`saved-feed-${info.displayName}`}
@@ -727,6 +771,11 @@ const styles = StyleSheet.create({
     gap: 12,
     borderBottomWidth: 1,
   },
+
+  deadSavedFeed: {
+    backgroundColor: '#FFD1D1', // Light pastel red
+  },
+
   savedFeedMobile: {
     paddingVertical: 10,
   },
