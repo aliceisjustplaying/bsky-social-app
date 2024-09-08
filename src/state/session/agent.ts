@@ -39,6 +39,7 @@ export async function createAgentAndResume(
     agent.sessionManager.pdsUrl = new URL(storedAccount.pdsUrl)
   }
   const gates = tryFetchGates(storedAccount.did, 'prefer-low-latency')
+  console.log('ZE gates ARE: ', gates)
   const moderation = configureModerationForAccount(agent, storedAccount)
   const prevSession: AtpSessionData = sessionAccountToSession(storedAccount)
   if (isSessionExpired(storedAccount)) {
