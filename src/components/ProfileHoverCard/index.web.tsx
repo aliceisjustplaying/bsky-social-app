@@ -347,9 +347,10 @@ let Card = ({did, hide}: {did: string; hide: () => void}): React.ReactNode => {
         a.border,
         a.rounded_md,
         a.overflow_hidden,
-        t.atoms.bg,
+        // t.atoms.bg,
         t.atoms.border_contrast_low,
         t.atoms.shadow_lg,
+        a.slightlyOpaque,
         {
           width: 300,
         },

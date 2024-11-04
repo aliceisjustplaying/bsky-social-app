@@ -10,11 +10,19 @@ export const atoms = {
   },
 
   aliceCardDark: {
-    backgroundColor: '#efc84f',
+    backgroundColor: 'rgba(239, 200, 79, 0.5)',
+    backdropFilter: 'blur(50px)',
   },
 
   aliceCardLight: {
-    backgroundColor: '#faefc3',
+    backgroundColor: 'rgba(250, 239, 195, 0.5)',
+    backdropFilter: 'blur(50px)',
+  },
+
+  slightlyOpaque: {
+    // opacity: 0.95,
+    backgroundColor: 'rgba(255, 255, 255, 0.5)',
+    backdropFilter: 'blur(50px)',
   },
   /*
    * Positioning
