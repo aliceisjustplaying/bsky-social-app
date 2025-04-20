@@ -35,10 +35,10 @@ export function LoadLatestBtn({
   // move button inline if it starts overlapping the left nav
   const isTallViewport = useMediaQuery({minHeight: 700})
 
-  const gate = useGate()
-  if (gate('remove_show_latest_button')) {
+  // const gate = useGate()
+  // if (gate('remove_show_latest_button')) {
     return null
-  }
+  // }
 
   // Adjust height of the fab if we have a session only on mobile web. If we don't have a session, we want to adjust
   // it on both tablet and mobile since we are showing the bottom bar (see createNativeStackNavigatorWithAuth)
