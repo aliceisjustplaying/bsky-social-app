@@ -353,7 +353,7 @@ function LandingScreenLoaded({
       {isWeb && (
         <meta
           name="apple-itunes-app"
-          content="app-id=xyz.blueskyweb.app, app-clip-bundle-id=xyz.blueskyweb.app.AppClip, app-clip-display=card"
+          content="app-id=com.aliceweb.socialapp, app-clip-bundle-id=com.aliceweb.socialapp.AppClip, app-clip-display=card"
         />
       )}
     </View>

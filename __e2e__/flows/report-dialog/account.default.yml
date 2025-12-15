@@ -1,4 +1,4 @@
-appId: xyz.blueskyweb.app
+appId: com.aliceweb.socialapp
 ---
 - runScript:
     file: ../../setupServer.js

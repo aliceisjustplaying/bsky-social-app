@@ -26,7 +26,7 @@ async function registerPushToken(
       serviceDid: SERVICE_DID(account.service),
       platform: devicePlatform,
       token: token.data,
-      appId: 'xyz.blueskyweb.app',
+      appId: 'com.aliceweb.socialapp',
     })
     logger.debug('Notifications: Sent push token (init)', {
       tokenType: token.type,

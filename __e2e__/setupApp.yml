@@ -1,7 +1,7 @@
-appId: xyz.blueskyweb.app
+appId: com.aliceweb.socialapp
 ---
 - launchApp:
-   appId: "xyz.blueskyweb.app"
+   appId: "com.aliceweb.socialapp"
    clearState: true
 - waitForAnimationToEnd
 - tapOn: "http://localhost:8081"
