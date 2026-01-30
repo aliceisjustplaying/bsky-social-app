@@ -4,7 +4,8 @@ import {Image} from 'expo-image'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 import {Trans} from '@lingui/react/macro'
-import {FocusGuards, FocusScope} from 'radix-ui/internal'
+import {useFocusGuards} from '@radix-ui/react-focus-guards'
+import {FocusScope} from '@radix-ui/react-focus-scope'
 import {RemoveScrollBar} from 'react-remove-scroll-bar'
 
 import {saveImageToMediaLibrary} from '#/lib/media/manip'
@@ -68,7 +69,7 @@ function LightboxContainer({
   handleBackgroundPress: () => void
 }) {
   const {_} = useLingui()
-  FocusGuards.useFocusGuards()
+  useFocusGuards()
   return (
     <Pressable
       accessibilityHint={undefined}
@@ -77,7 +78,7 @@ function LightboxContainer({
       style={[a.fixed, a.inset_0, a.z_10]}>
       <Backdrop />
       <RemoveScrollBar />
-      <FocusScope.FocusScope loop trapped asChild>
+      <FocusScope loop trapped asChild>
         <div
           role="dialog"
           aria-modal="true"
@@ -85,7 +86,7 @@ function LightboxContainer({
           style={{position: 'absolute', inset: 0}}>
           {children}
         </div>
-      </FocusScope.FocusScope>
+      </FocusScope>
     </Pressable>
   )
 }
