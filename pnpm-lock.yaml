@@ -13226,7 +13226,7 @@ snapshots:
 
   '@urql/exchange-retry@1.2.0(graphql@16.8.1)':
     dependencies:
-      '@urql/core': 6.0.1(graphql@16.8.1)
+      '@urql/core': 5.2.0(graphql@16.8.1)
       wonka: 6.3.6
     transitivePeerDependencies:
       - graphql
