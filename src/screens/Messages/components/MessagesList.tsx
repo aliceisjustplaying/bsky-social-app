@@ -1,4 +1,5 @@
 import {
+  cloneElement,
   useCallback,
   useEffect,
   useId,
@@ -12,13 +13,15 @@ import {
   type KeyboardChatScrollViewProps,
   KeyboardGestureArea,
 } from 'react-native-keyboard-controller'
-import {
+import Animated, {
   runOnJS,
   type ScrollEvent,
   type SharedValue,
   useAnimatedRef,
+  useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
+  withTiming,
 } from 'react-native-reanimated'
 import {useSafeAreaInsets} from 'react-native-safe-area-context'
 import {
@@ -155,6 +158,16 @@ export function MessagesList({
     show: false,
     startContentOffset: 0,
   })
+
+  const listOpacity = useSharedValue(0)
+
+  useEffect(() => {
+    if (hasScrolled) {
+      listOpacity.set(withTiming(1, {duration: 200}))
+    } else {
+      listOpacity.set(0)
+    }
+  }, [hasScrolled, listOpacity])
 
   const inputHeightUI = useSharedValue(0)
   const [inputHeightJS, setInputHeightJS] = useState(0)
@@ -475,6 +488,10 @@ export function MessagesList({
     [inputHeightUI],
   )
 
+  const animatedListStyle = useAnimatedStyle(() => ({
+    opacity: listOpacity.get(),
+  }))
+
   return (
     <InviteLinkDialogProvider convo={convoState.convo}>
       <KeyboardGestureArea
@@ -485,61 +502,66 @@ export function MessagesList({
         // textInputNativeID={textInputId}
         style={[a.flex_1]}>
         {/* Custom scroll provider so that we can use the `onScroll` event in our custom List implementation */}
-        <ScrollProvider onScroll={onScroll}>
-          <List
-            ref={flatListRef}
-            data={renderItems}
-            renderItem={renderItem}
-            keyExtractor={keyExtractor}
-            disableFullWindowScroll={true}
-            disableVirtualization={true}
-            // The extra two items account for the header and the footer components
-            initialNumToRender={IS_NATIVE ? 32 : 62}
-            maxToRenderPerBatch={IS_WEB ? 32 : 62}
-            keyboardDismissMode="interactive"
-            keyboardShouldPersistTaps="handled"
-            maintainVisibleContentPosition={{minIndexForVisible: 0}}
-            removeClippedSubviews={false}
-            sideBorders={false}
-            onContentSizeChange={onContentSizeChange}
-            onStartReached={onStartReached}
-            onScrollToIndexFailed={onScrollToIndexFailed}
-            showsVerticalScrollIndicator={!IS_ANDROID}
-            scrollEventThrottle={100}
-            ListHeaderComponent={
-              <>
-                <MaybeLoader isLoading={convoState.isFetchingHistory} />
-                {convoState.convo?.kind === 'group' &&
-                convoState.hasAllHistory ? (
-                  <MessagesListInfoPanel convo={convoState.convo} />
-                ) : null}
-              </>
-            }
-            // native only (prop is not supported on web)
-            renderScrollComponent={renderScrollComponent}
-            contentContainerStyle={{
-              paddingBottom: platform({
-                // ios is slightly larger as the input has no top padding
-                ios: tokens.space.lg,
-                android: tokens.space.md,
-                web: 0, // web uses ListFooterComponent instead for scroll reasons
-              }),
-            }}
-            ListFooterComponent={
-              <View
-                style={web({height: tokens.space.md + inputHeightJS})}
-                onLayout={onFooterLayout}
-              />
-            }
-            style={web({
-              scrollbarWidth: 'thin',
-              scrollbarColor: `${t.palette.contrast_100} transparent`,
-              scrollbarGutter: 'stable',
-            })}
-            contentInset={{top: transparentHeaderHeight}}
-            scrollIndicatorInsets={{top: transparentHeaderHeight}}
-          />
-        </ScrollProvider>
+        <Animated.View style={[a.flex_1, animatedListStyle]}>
+          <ScrollProvider onScroll={onScroll}>
+            <List
+              ref={flatListRef}
+              data={renderItems}
+              renderItem={renderItem}
+              keyExtractor={keyExtractor}
+              disableFullWindowScroll={true}
+              disableVirtualization={true}
+              // The extra two items account for the header and the footer components
+              initialNumToRender={IS_NATIVE ? 32 : 62}
+              maxToRenderPerBatch={IS_WEB ? 32 : 62}
+              keyboardDismissMode="interactive"
+              keyboardShouldPersistTaps="handled"
+              maintainVisibleContentPosition={{minIndexForVisible: 0}}
+              removeClippedSubviews={false}
+              sideBorders={false}
+              onContentSizeChange={onContentSizeChange}
+              onStartReached={onStartReached}
+              onScrollToIndexFailed={onScrollToIndexFailed}
+              showsVerticalScrollIndicator={!IS_ANDROID}
+              scrollEventThrottle={100}
+              ListHeaderComponent={
+                <>
+                  <MaybeLoader isLoading={convoState.isFetchingHistory} />
+                  {convoState.convo?.kind === 'group' &&
+                  convoState.hasAllHistory ? (
+                    <MessagesListInfoPanel convo={convoState.convo} />
+                  ) : null}
+                </>
+              }
+              // native only (prop is not supported on web)
+              renderScrollComponent={renderScrollComponent}
+              contentContainerStyle={{
+                paddingBottom: platform({
+                  // ios is slightly larger as the input has no top padding
+                  ios: tokens.space.lg,
+                  android: tokens.space.md,
+                  web: 0, // web uses ListFooterComponent instead for scroll reasons
+                }),
+              }}
+              ListFooterComponent={
+                <View
+                  style={web({height: tokens.space.md + inputHeightJS})}
+                  onLayout={onFooterLayout}
+                />
+              }
+              style={[
+                web({
+                  scrollbarWidth: 'thin',
+                  scrollbarColor: `${t.palette.contrast_100} transparent`,
+                  scrollbarGutter: 'stable',
+                }),
+              ]}
+              pointerEvents={!hasScrolled ? 'none' : 'auto'}
+              contentInset={{top: transparentHeaderHeight}}
+              scrollIndicatorInsets={{top: transparentHeaderHeight}}
+            />
+          </ScrollProvider>
+        </Animated.View>
         <KeyboardStickyView
           style={[a.absolute, a.bottom_0, a.left_0, a.right_0]}
           onLayout={onInputLayout}
@@ -663,7 +685,12 @@ function ConversationFooter({
 
   switch (footerState) {
     case 'loading':
-      return null
+      // Render children with loading prop instead of null
+      return children
+        ? cloneElement(children as React.ReactElement<{loading?: boolean}>, {
+            loading: true,
+          })
+        : null
     case 'new-chat':
       // new chat pill goes here - removed for now
       return children
